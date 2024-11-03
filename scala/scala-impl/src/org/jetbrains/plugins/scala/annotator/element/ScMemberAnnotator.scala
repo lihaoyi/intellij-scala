@@ -26,7 +26,9 @@ object ScMemberAnnotator extends ElementAnnotator[ScMember] {
         // We know, however, that when a definition is in a package then it's not allowed.
         // This fix might not be 100% correct, but I think the false positives are much worse than the false negatives.
         // So it's better not to annotate a top-level val that is not allowed in scala 2 than annotating one that is allowed.
-        element.parents.exists(_.is[ScPackageLike])
+        element.parents.exists(_.is[ScPackageLike]) &&
+        // Mill allows top level definitions in its build.mill scripts
+        !element.containingScalaFile.exists(_.isMillFile)
     ) {
       val elementToAnnotate = element.depthFirst().find(c => keywords(c.elementType)).getOrElse(element)
       holder.createErrorAnnotation(elementToAnnotate, ScalaBundle.message("cannot.be.a.top.level.definition.in.scala.2"))

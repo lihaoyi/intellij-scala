@@ -40,6 +40,8 @@ final class ScalaFileNameInspection extends LocalInspectionTool {
       IntentionAvailabilityChecker.checkInspection(this, scalaFile) &&
       !InjectedLanguageManager.getInstance(scalaFile.getProject).isInjectedFragment(scalaFile) &&
       !scalaFile.isWorksheetFile &&
+      // Mill build files often have elements that differ from the file name
+      !scalaFile.isMillFile &&
       Option(scalaFile.getVirtualFile).isDefined &&
       !ScratchUtil.isScratch(scalaFile.getVirtualFile) &&
       !FileContextUtil.getFileContext(scalaFile).is[ScStringLiteral]

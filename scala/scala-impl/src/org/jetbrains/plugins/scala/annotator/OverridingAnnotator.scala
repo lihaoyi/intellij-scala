@@ -190,8 +190,9 @@ trait OverridingAnnotator {
 
       if (isConcreteElement(namedElement.nameContext)) {
         val hasConcreteSuper = superSignatures.exists(isConcrete)
-
-        if (hasConcreteSuper && !member.hasModifierProperty(OVERRIDE)) {
+        // Mill build files make override optional, so don't error if the keyword is missing
+        val isMillFile = namedElement.containingScalaFile.exists(_.isMillFile)
+        if (!isMillFile && hasConcreteSuper && !member.hasModifierProperty(OVERRIDE)) {
           val maybeQuickFix: Option[Add] = namedElement match {
             case param: ScClassParameter if param.isCaseClassPrimaryParameter && !(param.isVal || param.isVar) =>
               superSignaturesWithSelfType.headOption.collect {

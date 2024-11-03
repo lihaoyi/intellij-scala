@@ -24,7 +24,12 @@ class TypeAnnotationInspection extends LocalInspectionTool {
       inspect(value, value.bindings.head, value.expr, holder)
     case variable: ScVariableDefinition if variable.isSimple && !variable.hasExplicitType =>
       inspect(variable, variable.bindings.head, variable.expr, holder)
-    case method: ScFunctionDefinition if method.hasAssign && !method.hasExplicitType && !method.isConstructor =>
+    case method: ScFunctionDefinition
+      if method.hasAssign
+        && !method.hasExplicitType
+        && !method.isConstructor
+        // Mill build files often elide type annotations of tasks
+        && !method.containingScalaFile.exists(_.isMillFile) =>
       inspect(method, method.nameId, method.body, holder)
     case (parameter: ScParameter) & Parent(Parent(Parent(_: ScFunctionExpr))) if parameter.typeElement.isEmpty =>
       inspect(parameter, parameter.nameId, implementation = None, holder)
