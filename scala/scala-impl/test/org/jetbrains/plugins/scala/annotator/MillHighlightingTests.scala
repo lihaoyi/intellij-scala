@@ -5,20 +5,26 @@ package org.jetbrains.plugins.scala.annotator
  */
 class MillHighlightingTests extends ScalaHighlightingTestBase {
   //SCL-23198
-  def testAllowDirectPackageReferences(): Unit = {
-    val code = """package foo{
-                 |  object `package`
-                 |}
-                 |
-                 |package bar{
-                 |  object qux{
-                 |    val reference = foo
-                 |  }
-                 |}
-                 |""".stripMargin
+  val code = """package foo{
+               |  object `package`
+               |}
+               |
+               |package bar{
+               |  object qux{
+               |    val reference = foo
+               |  }
+               |}
+               |""".stripMargin
+  def testBuildMillFileAllowsPackageReference(): Unit = {
     scala.Predef.assert(errorsFromScalaCode(code, "build.mill").isEmpty)
+  }
+  def testPackageFileAllowsPackageReference(): Unit = {
     scala.Predef.assert(errorsFromScalaCode(code, "package.mill").isEmpty)
+  }
+  def testBuildMillScalaFileAllowsPackageReference(): Unit = {
     scala.Predef.assert(errorsFromScalaCode(code, "build.mill.scala").isEmpty)
+  }
+  def testNormalScalaFileDisAllowsPackageReference(): Unit = {
     scala.Predef.assert(errorsFromScalaCode(code, "build.scala").nonEmpty)
   }
 }
