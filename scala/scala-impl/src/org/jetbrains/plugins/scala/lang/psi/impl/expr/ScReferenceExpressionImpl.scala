@@ -195,7 +195,10 @@ class ScReferenceExpressionImpl(node: ASTNode) extends ScReferenceImpl(node) wit
       case inf: ScInfixExpr if this == inf.operation || this == inf.getBaseExpr =>
         StdKinds.refExprQualRef
       case _ =>
-        StdKinds.refExprLastRef
+        // Mill files allow direct references to package
+        // objects, even though normal .scala files do not
+        if (this.containingScalaFile.exists(_.isMillFile)) StdKinds.refExprQualRef
+        else StdKinds.refExprLastRef
     }
   }
 
